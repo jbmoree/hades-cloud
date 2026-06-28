@@ -1,0 +1,5 @@
+&param_hde
+ngen = 10
+hdevar_in = './hdevar/in/'
+hdevar_out = './hdevar/out/'
+/
