@@ -278,10 +278,10 @@ When
 The file
 
 ```text
-out/optparam
+out/optparam_gXXX
 ```
 
-contains one line per generation:
+contains one line:
 
 ```text
 generation   descriptor   alpha   zeta   beta   rho
