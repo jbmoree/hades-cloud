@@ -149,6 +149,21 @@ def download_s3_keys(bucket, keys, prefix, output_dir):
         print(f"Downloading s3://{bucket}/{key} -> {local_path}")
         s3_client.download_file(bucket, key, str(local_path))
 
+def delete_s3_prefix(bucket, prefix):
+    paginator = s3_client.get_paginator("list_objects_v2")
+
+    objects = []
+
+    for page in paginator.paginate(Bucket=bucket, Prefix=prefix):
+        for obj in page.get("Contents", []):
+            objects.append({"Key": obj["Key"]})
+
+    if objects:
+        print(f"Deleting {len(objects)} S3 objects...")
+        s3_client.delete_objects(
+            Bucket=bucket,
+            Delete={"Objects": objects}
+        )
 
 def main():
     parser = argparse.ArgumentParser(
@@ -166,6 +181,7 @@ def main():
     parser.add_argument("--data-dir", default=None)
     parser.add_argument("--output-dir", default=None)
     parser.add_argument("--poll-seconds", type=int, default=10)
+    parser.add_argument("--cleanup", action="store_true")
     args = parser.parse_args()
 
     output_dir = args.output_dir or f"downloaded_results/{args.job_name}"
@@ -194,8 +210,12 @@ def main():
 
     download_s3_keys(args.bucket, keys, s3_prefix, output_dir)
 
-    print(f"Done. Results downloaded to: {output_dir}")
+    print(f"Results downloaded to: {output_dir}")
 
+    if args.cleanup:
+        delete_s3_prefix(args.bucket, s3_prefix)
+        delete_s3_prefix(args.bucket, f"inputs/jobs/{args.job_name}")
+        print("Temporary S3 files removed.")
 
 if __name__ == "__main__":
     main()
