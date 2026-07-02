@@ -367,3 +367,5 @@ The results are automatically downloaded to
 ```text
 downloaded_results/<job_name>/
 ```
+
+## Branch protection [in progress]
