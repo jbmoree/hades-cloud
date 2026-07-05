@@ -1,12 +1,12 @@
 name: HADES Cloud Deploy
 
-on:
-  workflow_dispatch:
-
 #on:
-#  push:
-#    branches:
-#      - main
+#  workflow_dispatch:
+
+on:
+  push:
+    branches:
+      - main
 
 permissions:
   contents: read
@@ -23,8 +23,15 @@ jobs:
 
     steps:
 
-      - name: Checkout repository
+      - name: Checkout hades-cloud repository
         uses: actions/checkout@v4
+
+      - name: Checkout private HADES engine
+        uses: actions/checkout@v4
+        with:
+          repository: jbmoree/hades
+          token: ${{ secrets.HADES_REPO_TOKEN }}
+          path: hades
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -35,6 +42,11 @@ jobs:
 
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Verify repository layout
+        run: |
+          pwd
+          ls -R
 
       - name: Build Docker image
         run: |
