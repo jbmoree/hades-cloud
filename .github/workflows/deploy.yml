@@ -1,9 +1,7 @@
 name: HADES Cloud Deploy
 
-#on:
-#  workflow_dispatch:
-
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
